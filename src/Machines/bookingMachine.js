@@ -6,21 +6,21 @@ const fillCountries = {
   states: {
     loading: {
       invoke: {
-        id: 'getCountries',
+        id: "getCountries",
         src: () => fetchCountries,
         onDone: {
-          target: 'success',
+          target: "success",
           actions: assign({
             countries: (context, event) => event.data,
-          })
+          }),
         },
         onError: {
-          target: 'failure',
+          target: "failure",
           actions: assign({
-            error: 'Fallo el request',
-          })
-        }
-      }
+            error: "Fallo el request",
+          }),
+        },
+      },
     },
     success: {},
     failure: {
@@ -34,15 +34,15 @@ const fillCountries = {
 const bookingMachine = createMachine(
   {
     id: "buy plane tickets",
-    initial: "initial",
+    initial: "firstStep",
     context: {
       passengers: [],
       selectedCountry: "",
       countries: [],
-      error: '',
+      error: "",
     },
     states: {
-      initial: {
+      firstStep: {
         on: {
           START: {
             target: "search",
@@ -57,29 +57,29 @@ const bookingMachine = createMachine(
               selectedCountry: (context, event) => event.selectedCountry,
             }),
           },
-          CANCEL: "initial",
+          CANCEL: "firstStep",
         },
         ...fillCountries,
       },
       tickets: {
         after: {
           5000: {
-            target: 'initial',
-            actions: 'cleanContext',
-          }
+            target: "firstStep",
+            actions: "cleanContext",
+          },
         },
         on: {
-          FINISH: "initial",
+          FINISH: "firstStep",
         },
       },
       passengers: {
         on: {
           DONE: {
             target: "tickets",
-            cond: "moreThanOnePassenger"
+            cond: "moreThanOnePassenger",
           },
           CANCEL: {
-            target: "initial",
+            target: "firstStep",
             actions: "cleanContext",
           },
           ADD: {
@@ -102,7 +102,7 @@ const bookingMachine = createMachine(
     guards: {
       moreThanOnePassenger: (context) => {
         return context.passengers.length > 0;
-      }
+      },
     },
   }
 );
